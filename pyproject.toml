@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ml-core"
+version = "0.1.0"
+description = "Implements from-scratch Machine Learning models for educational purposes"
+authors = ["Michel Davidovich <micheldc55@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy= "1.26.3"
+pandas= "2.2.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+black = "^23.0"
+isort = "^5.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
