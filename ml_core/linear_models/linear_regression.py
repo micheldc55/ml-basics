@@ -7,11 +7,12 @@ from ml_core.core_components.linalg import is_invertible_svd
 
 class LinearRegression(Model):
     """Linear regression model."""
-    def __init__(self):
+    def __init__(self, compute_stats: bool = False):
         super().__init__(name="LinearRegression")
         self.coef_ = None
         self.intercept_ = None
         self.betas_ = None
+        self.compute_stats = compute_stats
 
     def fit(self, X: ArrayLike, y: ArrayLike):
         """Fit the model to the data.
@@ -21,7 +22,7 @@ class LinearRegression(Model):
             y (ArrayLike): The target data.
         """
         X = self._preprocess_input_matrix(X)
-        y = np.array(y)
+        y = self._preprocess_input_vector(y)
 
         self._check_is_matrix_invertible(X.T @ X)
 
@@ -31,8 +32,7 @@ class LinearRegression(Model):
 
     def predict(self, X: ArrayLike):
         """Make predictions using the model."""
-        X = np.array(X)
-        X = self._include_intercept_column(X)
+        X = self._preprocess_input_matrix(X)
         return X @ self.betas_
     
     def save(self, path: str):
@@ -43,6 +43,11 @@ class LinearRegression(Model):
     
     def get_params(self):
         return {"coef_": self.coef_, "intercept_": self.intercept_}
+    
+    def get_residuals(self, X: ArrayLike, y: ArrayLike) -> ArrayLike:
+        """Get the residuals of the model."""
+        y_vec = self._preprocess_input_vector(y)
+        return y_vec - self.predict(X)
     
     @staticmethod
     def _check_is_matrix_invertible(X: ArrayLike):
@@ -65,6 +70,10 @@ class LinearRegression(Model):
             x_copy = x_copy.reshape(-1, 1)
 
         return self._include_intercept_column(x_copy)
+    
+    def _preprocess_input_vector(self, y: ArrayLike) -> ArrayLike:
+        """Preprocess the input vector."""
+        return np.array(y).copy()
     
     def __repr__(self):
         return "\n".join([f"beta_{i}: {beta}" for i, beta in enumerate(self.betas_)])
