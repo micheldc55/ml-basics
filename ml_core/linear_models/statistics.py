@@ -6,45 +6,31 @@ from numpy.typing import ArrayLike
 from ml_core.linear_models.linear_regression import LinearRegression
 
 
-class LRStatistics:
-    def __init__(self, model: LinearRegression, X: ArrayLike, y: ArrayLike):
-        self.model = model
-        self.data = X
-        self.target = y
-        self.X = self.model._preprocess_input_matrix(X)
-        self.y = self.model._preprocess_input_vector(y)
+class TTest:
+    """Implements a simple t-test class that computes the p-value for a given 
+    dataset."""
+    def __init__(self, t_statistics: ArrayLike, degrees_of_freedom: int):
+        self.t_statistics = t_statistics
+        self.degrees_of_freedom = degrees_of_freedom
+        self.p_values = self._compute_p_values()
 
-        self.beta_p_vals = self._compute_beta_p_values()
-
-
-    def _get_residuals(self) -> ArrayLike:
-        return self.model.get_residuals(self.data, self.target)
-    
-    def _get_sum_squared_residuals(self) -> float:
-        residuals = self.get_residuals()
-        return np.sum(np.square(residuals))
-    
-    def _get_residual_variance(self) -> float:
-        return self._get_sum_squared_residuals() / (self.X.shape[0] - self.X.shape[1] - 1)
-    
-    def _get_beta_covariance_matrix(self) -> ArrayLike:
-        residual_variance = self._get_residual_variance()
-        return residual_variance * np.linalg.inv(self.X.T @ self.X)
-    
-    def _get_beta_std_errs(self) -> ArrayLike:
-        return np.sqrt(np.diag(self._get_beta_covariance_matrix()))
-    
-    def _compute_beta_t_test_statistic(self) -> ArrayLike:
-        beta_std_errs = self._get_beta_std_errs()
-        return self.model.betas_ / beta_std_errs
-    
-    def _compute_beta_p_values(self) -> ArrayLike:
-        t_stats = self._compute_beta_t_test_statistic()
-        degrees_of_freedom = self.X.shape[0] - self.X.shape[1] - 1
-        prob_T_higher_than_t = 1 - scipy.stats.t.cdf(np.abs(t_stats), degrees_of_freedom)
+    def _compute_p_values(self) -> ArrayLike:
+        prob_T_higher_than_t = 1 - scipy.stats.t.cdf(
+            np.abs(self.t_statistics), self.degrees_of_freedom
+        )
         return 2 * prob_T_higher_than_t
-    
-    def _get_sum_total_squares(self) -> float:
-        return np.sum(np.square(self.y - np.mean(self.y)))
-    
-    
+
+
+class FTest:
+    pass
+
+
+if __name__ == "__main__":
+    X = np.array([[1.01, 0], [2.0004, 0], [3, 0], [4, 0.1], [5, 0.01]])
+    y = np.array([2, 3, 4, 5, 6])
+
+    model = LinearRegression()
+    model.fit(X, y)
+    t_statistics = model.compute_t_statistics(X, y)
+    t_test = TTest(t_statistics, model.degrees_of_freedom)
+    print(t_test.p_values)
