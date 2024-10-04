@@ -24,16 +24,13 @@ def generate_linear_regression_report(
     """
     Generate a linear regression report, formatted similarly to R's regression summary.
     """
-    # Check if model is fitted
     if lr_model is not None and not getattr(lr_model, 'trained', False):
         raise ValueError("The Linear Regression model has not been trained yet. Fit the model before generating a report!")
 
-    # Printing Call
     print("Call:")
     print("lr(formula = y ~ beta * X, data = dataset)")
     print()
 
-    # Printing Residuals
     print("Residuals:")
     print(
         "{:<8} {:<8} {:<8} {:<8} {:<8}".format("Min", "1Q", "Median", "3Q", "Max")
@@ -49,7 +46,6 @@ def generate_linear_regression_report(
     )
     print()
 
-    # Printing Coefficients
     print("Coefficients:")
     header = f"{'':>12} {'Estimate':>10} {'Std. Error':>12} {'t value':>8} {'Pr(>|t|)':>10}"
     print(header)
@@ -75,16 +71,13 @@ def generate_linear_regression_report(
     print("-" * len(header))
     print()
 
-    # Printing Residual Standard Error
     print(
         f"Residual std error: \t{residual_standard_error:.3f} on {df_residual} degrees of freedom"
     )
 
-    # Printing R-squared and Adjusted R-squared
     print(f"Multiple R-squared:  \t{r_squared:.3f}")
     print(f"Adjusted R-squared:  \t{adjusted_r_squared:.3f}")
 
-    # Printing F-statistic
     print(
         f"F-statistic: \t{f_statistic:.1f} on {df_model} and {df_residual} DF,  p-value: {f_p_value:.2e}"
     )
