@@ -200,7 +200,7 @@ class LinearRegression(RegressionModel):
     
 
     def __repr__(self):
-        return "\n".join([f"beta_{i}: {beta}" for i, beta in enumerate(self.betas_)])
+        return str(self.get_params())
 
 
     def __str__(self):
