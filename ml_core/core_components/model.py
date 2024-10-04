@@ -27,3 +27,17 @@ class Model(ABC):
     @abstractmethod
     def get_params(self):
         pass
+
+class RegressionModel(Model):
+    """Base Model class for all regression models."""
+    def __init__(self, name: str):
+        super().__init__(name)
+
+
+class ClassificationModel(Model):
+    """Base Model class for all classification models."""
+    def __init__(self, name: str):
+        super().__init__(name)
+
+    def estimate_probability(self, X):
+        pass
