@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 
-def inv(X: ArrayLike):
+def invert_matrix(X: ArrayLike):
     """Compute the inverse of a matrix."""
     return np.linalg.inv(X)
 
@@ -15,7 +15,7 @@ def is_symmetric(X: ArrayLike) -> bool:
 def is_invertible_np(X: ArrayLike) -> bool:
     """Check if a matrix is invertible."""
     try:
-        inv(X)
+        invert_matrix(X)
         return True
     except np.linalg.LinAlgError:
         return False

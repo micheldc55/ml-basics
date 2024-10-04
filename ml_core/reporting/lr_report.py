@@ -30,7 +30,7 @@ def generate_linear_regression_report(
 
     # Printing Call
     print("Call:")
-    print("lm(formula = y ~ x1 + x2, data = dataset)")
+    print("lr(formula = y ~ beta * X, data = dataset)")
     print()
 
     # Printing Residuals

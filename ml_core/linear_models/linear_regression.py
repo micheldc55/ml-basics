@@ -2,7 +2,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from ml_core.core_components.model import RegressionModel
-from ml_core.core_components.linalg import is_invertible_svd
+from ml_core.core_components.linalg import is_invertible_svd, invert_matrix
 
 
 class LinearRegression(RegressionModel):
@@ -36,7 +36,7 @@ class LinearRegression(RegressionModel):
 
         self._check_is_matrix_invertible(X.T @ X)
 
-        self.betas_ = np.linalg.inv(X.T @ X) @ X.T @ y
+        self.betas_ = invert_matrix(X.T @ X) @ X.T @ y
         self.intercept_ = self.betas_[0]
         self.coef_ = self.betas_[1:]
         self.trained = True
@@ -178,7 +178,7 @@ class LinearRegression(RegressionModel):
     def _compute_covariance_matrix(self) -> ArrayLike:
         """Compute the covariance matrix of the model."""
         residuals_variance = self._get_residuals_variance()
-        return residuals_variance * np.linalg.inv(self.x_.T @ self.x_)
+        return residuals_variance * invert_matrix(self.x_.T @ self.x_)
     
 
     def _compute_total_sum_squares(self, y_true: ArrayLike) -> float:
