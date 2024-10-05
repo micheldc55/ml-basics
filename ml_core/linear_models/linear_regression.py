@@ -7,7 +7,7 @@ from ml_core.core_components.linalg import is_invertible_svd, invert_matrix
 
 class LinearRegression(RegressionModel):
     """Linear regression model."""
-    def __init__(self, compute_stats: bool = False):
+    def __init__(self):
         super().__init__(name="LinearRegression")
         self.coef_ = None
         self.intercept_ = None
@@ -15,7 +15,6 @@ class LinearRegression(RegressionModel):
         self.degrees_of_freedom = None
         self.num_predictors = None
         self.trained = False
-        self.compute_stats = compute_stats
 
     def fit(self, X: ArrayLike, y: ArrayLike):
         """Fit the model to the data.
