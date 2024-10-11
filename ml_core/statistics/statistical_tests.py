@@ -45,12 +45,17 @@ if __name__ == "__main__":
     X = np.array([[1.01, 0], [2.0004, 0], [3, 0], [4, 0.1], [5, 0.01]])
     y = np.array([2, 3, 4, 5, 6])
 
+    print(X)
+
     model = LinearRegression()
     model.fit(X, y)
-    t_statistics = model.compute_t_statistics(X, y)
+    t_statistics = model.compute_t_statistics()
     t_test = TTest(t_statistics, model.degrees_of_freedom)
     print(t_test.p_values)
 
-    f_statistics = model.compute_f_statistic(X, y)
+    f_statistics = model.compute_f_statistic()
     f_test = FTest(f_statistics, model.num_predictors, model.degrees_of_freedom)
     print(f_test.p_values)
+
+    print(model.betas_)
+    print(model.coef_)
