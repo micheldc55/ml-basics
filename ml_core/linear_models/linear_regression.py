@@ -8,6 +8,14 @@ from ml_core.core_components.linalg import is_invertible_svd, invert_matrix
 class LinearRegression(RegressionModel):
     """Linear regression model."""
     def __init__(self):
+        """Sets all the following parameters to None: 
+        - `coef_`: The coefficients of the model.
+        - `intercept_`: The intercept of the model.
+        - `betas_`: The beta values of the model.
+        - `degrees_of_freedom`: The degrees of freedom of the model.
+        - `num_predictors`: The number of predictors in the model.
+        - `trained`: A flag to indicate if the model has been trained or not.
+        """
         super().__init__(name="LinearRegression")
         self.coef_ = None
         self.intercept_ = None
@@ -52,11 +60,16 @@ class LinearRegression(RegressionModel):
         raise NotImplementedError
     
     def get_params(self):
-        params_dict = {
-            f"beta_x_{i + 1}": coef
+        params_dict = {"intercept": self.intercept_}
+        params_dict.update({
+            f"beta_x{i + 1}": coef
             for i, coef in enumerate(self.coef_)
-        }
-        params_dict["intercept"] = self.intercept_
+        })
+        params_dict.update({
+            "degrees_of_freedom": self.degrees_of_freedom,
+            "num_predictors": self.num_predictors
+        })
+
         return params_dict
     
     def compute_t_statistics(self) -> ArrayLike:
@@ -199,8 +212,39 @@ class LinearRegression(RegressionModel):
     
 
     def __repr__(self):
-        return str(self.get_params())
+        return f"{self.name} = ({self.get_params()})"
 
 
     def __str__(self):
         return self.__repr__()
+    
+
+class RidgeRegression(LinearRegression):
+    """Implements Ridge regression model using L2 regularization."""
+    def __init__(self, lambda_: float):
+        if lambda_ < 0:
+            raise ValueError(f"Regularization parameter must be non-negative! You passed: {lambda_}")
+        
+        super().__init__()
+        self.lambda_ = lambda_
+        self.name = "RidgeRegression"
+    
+    def fit(self, X: ArrayLike, y: ArrayLike):
+        X = self._preprocess_input_matrix(X)
+        y = self._preprocess_input_vector(y)
+
+        self.x_ = X
+        self.y_ = y
+
+        self._check_degrees_of_freedom(X.shape[0] - X.shape[1])
+        self.degrees_of_freedom = X.shape[0] - X.shape[1]
+        self.num_predictors = X.shape[1] - 1
+
+        self._check_is_matrix_invertible(X.T @ X + self.lambda_ * np.eye(X.shape[1]))
+
+        self.betas_ = invert_matrix(X.T @ X + self.lambda_ * np.eye(X.shape[1])) @ X.T @ y
+        self.intercept_ = self.betas_[0]
+        self.coef_ = self.betas_[1:]
+        self.trained = True
+
+
