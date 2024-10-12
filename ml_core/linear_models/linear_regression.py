@@ -248,3 +248,71 @@ class RidgeRegression(LinearRegression):
         self.trained = True
 
 
+class LassoRegression(LinearRegression):
+    """Implements Lasso regression model using L1 regularization. There are faster and slower ways 
+    to implement Lasso regression, for simplicity the default way uses the slower method, called 
+    coordinate descent. There is also a faster method implemented, but it has to be specified 
+    when calling the .fit() method.
+
+    Args:
+        `lambda_` (float): The regularization parameter to optimize the Lasso regularized SSR: 
+            min(||Y - X*beta|| + lambda\_ * ||beta||_1).
+        `max_iter` (int): The maximum number of iterations for the optimization algorithm.
+        `tol` (float): The tolerance for the optimization algorithm.
+        `method` (str): The optimization method to use. Can be either "coordinate_descent" or 
+            "fista".
+    """
+    def __init__(
+            self, 
+            lambda_: float, 
+            max_iter: int = 1000, 
+            tol: float = 1e-4, 
+            method: str = "coordinate_descent"
+        ):
+        if lambda_ < 0:
+            raise ValueError(f"Regularization parameter must be non-negative! You passed: {lambda_}")
+        
+        super().__init__()
+        self.lambda_ = lambda_
+        self.method = method
+        self.max_iter = max_iter
+        self.tol = tol
+        self.name = "LassoRegression"
+
+    def fit(self, X: np.ndarray, y: np.ndarray):
+        X = self._preprocess_input_matrix(X)
+        y = self._preprocess_input_vector(y)
+
+        self.x_ = X
+        self.y_ = y
+
+        self._check_degrees_of_freedom(X.shape[0] - X.shape[1])
+        self.degrees_of_freedom = X.shape[0] - X.shape[1]
+        self.num_predictors = X.shape[1] - 1
+
+        self.betas_ = np.zeros(X.shape[1])
+        for _ in range(self.max_iter):
+            betas_old = self.betas_.copy()
+
+            for j in range(X.shape[1]):
+                residual = y - (X @ self.betas_ - X[:, j] * self.betas_[j])
+                
+                rho = X[:, j].T @ residual
+                self.betas_[j] = self._soft_threshold(rho / X.shape[0], self.lambda_ / 2)
+
+            if np.max(np.abs(self.betas_ - betas_old)) < self.tol:
+                break
+
+        self.intercept_ = self.betas_[0]
+        self.coef_ = self.betas_[1:]
+        self.trained = True
+
+    @staticmethod
+    def _soft_threshold(rho, lambda_):
+        """Soft-thresholding operator for Lasso regression."""
+        if rho > lambda_:
+            return rho - lambda_
+        elif rho < -lambda_:
+            return rho + lambda_
+        else:
+            return 0.0
