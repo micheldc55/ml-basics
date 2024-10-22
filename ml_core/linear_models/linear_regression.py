@@ -256,7 +256,7 @@ class LassoRegression(LinearRegression):
 
     Args:
         `lambda_` (float): The regularization parameter to optimize the Lasso regularized SSR: 
-            min(||Y - X*beta|| + lambda\_ * ||beta||_1).
+            min(||Y - X * beta|| + lambda\_ * ||beta||_1).
         `max_iter` (int): The maximum number of iterations for the optimization algorithm.
         `tol` (float): The tolerance for the optimization algorithm.
         `method` (str): The optimization method to use. Can be either "coordinate_descent" or 
