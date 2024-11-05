@@ -259,22 +259,18 @@ class LassoRegression(LinearRegression):
             min(||Y - X * beta|| + lambda\_ * ||beta||_1).
         `max_iter` (int): The maximum number of iterations for the optimization algorithm.
         `tol` (float): The tolerance for the optimization algorithm.
-        `method` (str): The optimization method to use. Can be either "coordinate_descent" or 
-            "fista".
     """
     def __init__(
             self, 
             lambda_: float, 
             max_iter: int = 1000, 
-            tol: float = 1e-4, 
-            method: str = "coordinate_descent"
+            tol: float = 1e-4
         ):
         if lambda_ < 0:
             raise ValueError(f"Regularization parameter must be non-negative! You passed: {lambda_}")
         
         super().__init__()
         self.lambda_ = lambda_
-        self.method = method
         self.max_iter = max_iter
         self.tol = tol
         self.name = "LassoRegression"
